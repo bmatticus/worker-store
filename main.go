@@ -8,12 +8,16 @@ const (
 	Redis            = 2
 )
 
-type WorkerStoreType struct {
-	WorkerStoreType StoreType `json:"storeType"`
+type WorkerStoreType interface {
+	AddQueue(WorkerStoreQueue) error
+	GetQueue(string) (*WorkerStoreQueue, error)
 }
 
 func InitWorkerStore(storeType StoreType) WorkerStoreType {
-	return WorkerStoreType{
-		WorkerStoreType: storeType,
+	var workerStoreType WorkerStoreType
+	if storeType == Memory {
+		workerStoreType = InitMemoryWorkerStore()
 	}
+
+	return workerStoreType
 }
